@@ -1,63 +1,68 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct node {
-  char data;
-  struct node *next;
-} LinkedList;
+typedef struct LinkedList{
+    char value;
+    struct LinkedList *next, *prev;
+}LinkedList;
 
-LinkedList *allocate_node(int data) {
-  LinkedList *node = (LinkedList *)malloc(sizeof(LinkedList));
-  node->data = data;
-  node->next = NULL;
-  return node;
+LinkedList* allocNode(){
+    LinkedList* node = malloc(sizeof(LinkedList));
+    return node;
 }
-
-void show_list(LinkedList *list) {
-  LinkedList *temp = list;
-  while (temp != NULL) {
-    printf("[%c]->", temp->data);
-    temp = temp->next;
-  };
-  printf("->NULL\n");
+LinkedList* appendList(LinkedList* head, char val){
+    if(head == NULL){
+        head = allocNode();
+        head->value = val;
+        return head;
+    }
+    LinkedList* tail = head;
+    while(tail->next != NULL){
+        tail = tail->next;
+    }
+    tail->next = allocNode();
+    tail->next->value = val; 
+    tail->next->prev = tail;
+    return head;
 }
-
-LinkedList *append_node(LinkedList *list, int new_data) {
-  LinkedList *node = allocate_node(new_data);
-  node->data = new_data;
-  node->next = NULL;
-  if (list == NULL) {
-    list = node;
-  } else {
-    LinkedList *lastNode = list;
-    while (lastNode->next != NULL) lastNode = lastNode->next;
-    lastNode->next = node;
-  };
-  return list;
+void showList(LinkedList* head){
+    LinkedList* now = head;
+    while(now->next != NULL){
+        printf("[%c]->", now->value);
+        now = now->next;
+    }
+    printf("[%c]->->NULL\n", now->value);
+    return;
 }
-
-LinkedList *reverse_node(LinkedList *list) {
-  LinkedList *prev = NULL;
-  LinkedList *current = list;
-  LinkedList *next = NULL;
-  while (current != NULL) {
-    next = current->next;
-    current->next = prev;
-    prev = current;
-    current = next;
-  }
-  return prev;
+LinkedList* reverseList(LinkedList* head){
+    if(head == NULL)
+        return NULL;
+    LinkedList* tail = head;
+    while(tail->next != NULL){
+        tail = tail->next;
+    }
+    head = tail;
+    while(tail->prev != NULL){
+        LinkedList* temp;
+        temp = tail->prev;
+        tail->prev = tail->next;
+        tail->next = temp;
+        tail = tail->next;
+    }
+    tail->prev = tail->next;
+    tail->next = NULL;
+    return head;
 }
-
-int main() {
-  LinkedList *head = NULL;
-  head = append_node(head, 'A');
-  head = append_node(head, 'B');
-  head = append_node(head, 'C');
-  head = append_node(head, 'D');
-  head = append_node(head, 'E');
-  show_list(head);
-  head = reverse_node(head);
-  show_list(head);
-  return 0;
+int main()
+{
+    LinkedList* head = NULL;
+    head = appendList(head, 'A');
+    head = appendList(head, 'B');
+    head = appendList(head, 'C');
+    head = appendList(head, 'D');
+    head = appendList(head, 'E');
+    showList(head);
+    head = reverseList(head);
+    showList(head);
+    return 0;
 }
